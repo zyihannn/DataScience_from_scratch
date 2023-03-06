@@ -27,16 +27,17 @@ def sum_squared_error(X:List[Vector], Y:Vector, beta:Vector) -> float:
 def grad_sum_squared_error(X:List[Vector], Y:Vector, beta:Vector) -> float: 
     #error =  np.dot(beta,x) - y 
     #sqr_error  = (error)**2
-    #grad_wrt_beta = (2*error)* np.sum(beta)
+    #grad_wrt_beta = np.dot((2*error) ,x)
 
 
     # x is vector, y is float 
-    return np.sum([2*(np.dot(beta,x) -y)*np.sum(beta) for x, y in zip(X,Y)])
+        
+    return [np.dot(2*(np.dot(beta,x) -y),x) for x, y in zip(X,Y)]  #??
 
 ####gradient descend 
-# make a fake dataset with perfect fit
-k = 5 
-m = 10 
+# make a fake dataset with perfect fit:
+k = 5 # length of xi
+m = 10 # number of x in X
 X=[]
 for _ in range(0,10):
     X.append([random.uniform(-50,50) for _ in range(0, k)])
@@ -44,11 +45,15 @@ for _ in range(0,10):
 beta_actual = [1,2,3,4,5]
 Y= np.dot(X,beta_actual)
 
+print(grad_sum_squared_error(X,Y,beta_actual))
+
+assert np.isclose(grad_sum_squared_error(X,Y,beta_actual),0)
+
 
 #start point  :
 beta = [random.random() for _ in range(k)]
 learning_rate = -0.001
-attemps = 500
+attemps = 100
 
 for _ in range(0,attemps):
     grad = grad_sum_squared_error(X, Y, beta)
