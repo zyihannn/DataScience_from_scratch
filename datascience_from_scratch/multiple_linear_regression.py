@@ -3,39 +3,42 @@ from typing import List
 import random
 
 # multiple linear regression:
-#y_i
+#y_i =  alpha + beta1xi1 +beta2*xi2  .... +betak*xik
 #coefficient -> beta = [alpha, beta_1,beta_2 .... beta_k]
 # x_i = [1, x_i1,  x_i2, ..... x_ik]
 # y_i = beta * x_i (dot product)
 
-# [ x,x,x,x,..x      [ alpha,        [ y 
-#   x,x,x,x,..x,  *    beta_1,    =    y 
-#   x,x,x,x,..x          ...          ..
-#   ....]              beta_k ]        y ]
+# [ 1, x,x,x,x,..x      [ alpha,        [ y1 
+#   1, x,x,x,x,..x,  *    beta_1,    =    y2 
+#   1, x,x,x,x,..x          ...          ..
+#   1, ....]              beta_k ]        yk ]
 
 Vector = List[float]
 
 #### fitting : using gradient descend to find out least sqare errors 
-def squared_error(x: Vector, y : float, beta: Vector) -> float:
-    return (np.dot(beta,x)-y)**2 #this is just for one x, one y 
+def error(x: Vector, y : float, beta: Vector) -> float:
+    return (np.dot(beta,x)-y) #note: this is just for one x, one y 
+# considering the entire dataset , the error array is :
+# [error1,
+#  error2,
+#  ....
+#  error k]
+
 
 #for entire data set:
-def sum_squared_error(X:List[Vector], Y:Vector, beta:Vector) -> float:
-    return np.sum([squared_error(x, y , beta) for x, y in zip(X,Y)])
-
 #calculate gradient of sum of square error 
-def grad_sum_squared_error(X:List[Vector], Y:Vector, beta:Vector) -> float: 
-    #error =  np.dot(beta,x) - y 
-    #sqr_error  = (error)**2
-    #grad_wrt_beta = np.dot((2*error) ,x)
+def grad_sum_squared_error(X:List[Vector], Y:Vector, beta:Vector) -> Vector: 
+    #error_i =  np.dot(beta,x) - y 
+    #sqr_error_i  = [np.dot(beta,x) - y ]**2
+    #grad_sum_sqrerror_wrt_beta1 = 2*[np.dot(beta,x11) - y1] * x11 + 2*[np.dot(beta,x21) - y1] * x21  + ... = 2*error1*x11 +2*error2*x21+...
+
+    grad_matrix= [ 2*error(x,y,beta)*np.array(x) for x, y in zip(X,Y)]
+
+    arr_add = np.array([0]*len(grad_matrix[0]))
+
+    for index, lst_i in enumerate(grad_matrix):
+        arr_add = arr_add + np.array(lst_i)
     
-    grad_list= [np.dot(2*(np.dot(beta,x) -y),x) for x, y in zip(X,Y)]
-    arr_add = np.array([0]*len(X[0]))
-
-    for grad_arr in grad_list:
-        arr_add = arr_add + grad_arr
-
-        
     return arr_add
 
 ####gradient descend 
@@ -49,15 +52,9 @@ for _ in range(0,10):
 beta_actual = [1,2,3,4,5]
 Y= np.dot(X,beta_actual)
 
-print(X)
-print(Y)
-assert(False)
-
-
-
-
 #start point  :
 beta = [random.random() for _ in range(k)]
+
 print(f'initial guess for beta is : {beta} ')
 learning_rate = -0.001
 attemps = 100
