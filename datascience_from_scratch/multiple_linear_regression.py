@@ -64,20 +64,23 @@ Y= np.dot(X,beta_actual)
 
 assert np.isclose(sum_of_sqerr(X,Y,beta_actual),0)
 
-#starting point  :
-beta = [random.random() for _ in range(k)]
-print(f'initial guess for beta is : {beta} ')
 
-learning_rate = -0.001
-attemps = 1000
+def least_squares_fit(X:List[Vector],
+                      Y:Vector, 
+                      attemps = 1000,
+                      learning_rate = -0.001)-> Vector:
+    #starting point  :
+    beta = [random.random() for _ in range(len(X[0]))]
+    print(f'initial guess for beta is : {beta} ')
 
-for _ in range(0,attemps):
-    grad = grad_sum_squared_error(X, Y, beta)
-    sqr_err = sum_of_sqerr(X,Y,beta)
-    print(f'sum of err is :{sqr_err}')
-    beta = np.array(beta) + grad*learning_rate
+    for _ in range(0,attemps):
+        grad = grad_sum_squared_error(X, Y, beta)
+        sqr_err = sum_of_sqerr(X,Y,beta)
+        print(f'sum of err is :{sqr_err}')
+        #then, update beta
+        beta = np.array(beta) + grad*learning_rate
 
-print(beta)
+    return beta 
 
 
 
